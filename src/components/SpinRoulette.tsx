@@ -35,19 +35,39 @@ const SpinRoulette = ({ onBack }: SpinRouletteProps) => {
     
     setSpinning(true);
     
-    const randomIndex = Math.floor(Math.random() * prizes.length);
-    const targetPosition = (prizes.length + randomIndex) * 200 + 100;
-    
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({
-        left: targetPosition,
-        behavior: 'smooth'
-      });
-    }
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-    setTimeout(() => {
-      setSpinning(false);
-    }, 3000);
+    const randomIndex = Math.floor(Math.random() * prizes.length);
+    const itemWidth = 176;
+    const centerOffset = window.innerWidth / 2 - itemWidth / 2;
+    const startPosition = prizes.length * itemWidth;
+    const targetPosition = startPosition + (prizes.length + randomIndex) * itemWidth - centerOffset;
+    
+    container.scrollLeft = 0;
+    
+    let startTime: number | null = null;
+    const duration = 4000;
+    const easeOutQuart = (t: number) => 1 - Math.pow(1 - t, 4);
+    
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutQuart(progress);
+      
+      container.scrollLeft = targetPosition * easedProgress;
+      
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      } else {
+        setTimeout(() => {
+          setSpinning(false);
+        }, 500);
+      }
+    };
+    
+    requestAnimationFrame(animate);
   };
 
   return (
@@ -114,10 +134,10 @@ const SpinRoulette = ({ onBack }: SpinRouletteProps) => {
 
           <div 
             ref={scrollContainerRef}
-            className="w-full overflow-x-auto scrollbar-hide mb-8"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="w-full overflow-x-scroll scrollbar-hide mb-8"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', scrollBehavior: 'auto' }}
           >
-            <div className="flex gap-4 px-[50vw] py-8">
+            <div className="flex gap-4 py-8" style={{ paddingLeft: 'calc(50vw - 80px)', paddingRight: 'calc(50vw - 80px)' }}>
               {duplicatedPrizes.map((prize, index) => (
                 <div
                   key={`${prize.id}-${index}`}
