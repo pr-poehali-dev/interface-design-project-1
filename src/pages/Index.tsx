@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import RouletteModal from '@/components/RouletteModal';
 
 interface CaseItem {
   id: string;
@@ -15,6 +16,7 @@ const Index = () => {
   const [stars, setStars] = useState(107);
   const [tickets, setTickets] = useState(0);
   const [activeTab, setActiveTab] = useState('cases');
+  const [showRouletteModal, setShowRouletteModal] = useState(false);
 
   const cases: CaseItem[] = [
     {
@@ -127,6 +129,7 @@ const Index = () => {
             {cases.map((caseItem, index) => (
               <div
                 key={caseItem.id}
+                onClick={() => caseItem.id === 'roulette' && setShowRouletteModal(true)}
                 className={`bg-gradient-to-r ${caseItem.gradient} rounded-3xl p-6 cursor-pointer hover:scale-[1.02] transition-all animate-fade-in`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -179,6 +182,10 @@ const Index = () => {
           </div>
         </nav>
       </div>
+      
+      {showRouletteModal && (
+        <RouletteModal onClose={() => setShowRouletteModal(false)} />
+      )}
     </div>
   );
 };
