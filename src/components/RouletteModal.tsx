@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import SpinRoulette from './SpinRoulette';
 
 interface NFTItem {
   id: string;
@@ -15,6 +17,8 @@ interface RouletteModalProps {
 }
 
 const RouletteModal = ({ onClose }: RouletteModalProps) => {
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
   const nftItems: NFTItem[] = [
     {
       id: '1',
@@ -55,6 +59,10 @@ const RouletteModal = ({ onClose }: RouletteModalProps) => {
       locked: true
     }
   ];
+
+  if (selectedItem === '1') {
+    return <SpinRoulette onBack={() => setSelectedItem(null)} />;
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm animate-fade-in">
@@ -100,7 +108,8 @@ const RouletteModal = ({ onClose }: RouletteModalProps) => {
                 {nftItems.map((item, index) => (
                   <div
                     key={item.id}
-                    className="bg-secondary/80 rounded-2xl p-4 relative overflow-hidden hover:scale-[1.02] transition-all animate-scale-in"
+                    onClick={() => !item.locked && setSelectedItem(item.id)}
+                    className="bg-secondary/80 rounded-2xl p-4 relative overflow-hidden hover:scale-[1.02] transition-all animate-scale-in cursor-pointer"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <div className="aspect-square bg-muted/30 rounded-xl mb-3 flex items-center justify-center text-6xl relative">
